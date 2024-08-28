@@ -1,0 +1,27 @@
+const express = require('express');
+const SuccessStory = require('./models/SuccessStory'); // Mongoose SuccessStory model
+const app = express();
+
+app.use(express.json());
+
+// Submit Success Story Endpoint
+app.post('/submit-story', async (req, res) => {
+    try {
+        const { title, content, alumniId } = req.body;
+
+        // Input validation
+        if (!title || !content || !alumniId) {
+            return res.status(400).send('All fields are required');
+        }
+
+        // Save story to database
+        const newStory = new SuccessStory({ title, content, alumniId });
+        await newStory.save();
+
+        res.status(201).send('Success story submitted');
+    } catch (error) {
+        res.status(500).send('Server error');
+    }
+});
+
+app.listen(3000, () => console.log('Server running on port 3000'));
