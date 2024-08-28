@@ -1,0 +1,45 @@
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
+
+function TransactionView() {
+    const [transactions, setTransactions] = useState([]);
+
+    useEffect(() => {
+        const fetchTransactions = async () => {
+            const token = localStorage.getItem('token');
+            const { data } = await axios.get('http://localhost:3000/transactions', {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+            setTransactions(data);
+        };
+        fetchTransactions();
+    }, []);
+
+    return (
+        <div>
+            <h2>Transaction History</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Donor Email</th>
+                        <th>Amount</th>
+                        <th>Date</th>
+                        <th>Project</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {transactions.map((transaction) => (
+                        <tr key={transaction._id}>
+                            <td>{transaction.donorEmail}</td>
+                            <td>${transaction.amount}</td>
+                            <td>{new Date(transaction.date).toLocaleDateString()}</td>
+                            <td>{transaction.project}</td>
+                        </tr>
+                    ))}
+                </tbody>
+            </table>
+        </div>
+    );
+}
+
+export default TransactionView;
