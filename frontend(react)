@@ -1,0 +1,58 @@
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
+
+function Messages() {
+    const [messages, setMessages] = useState([]);
+    const [content, setContent] = useState('');
+    const [recipient, setRecipient] = useState('');
+
+    useEffect(() => {
+        const fetchMessages = async () => {
+            const token = localStorage.getItem('token');
+            const { data } = await axios.get('http://localhost:3000/messages', {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+            setMessages(data);
+        };
+        fetchMessages();
+    }, []);
+
+    const handleSend = async (e) => {
+        e.preventDefault();
+        const token = localStorage.getItem('token');
+        try {
+            await axios.post('http://localhost:3000/send-message', { to: recipient, content }, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+            setContent('');
+            setRecipient('');
+            alert('Message sent');
+        } catch (error) {
+            alert('Message sending failed');
+        }
+    };
+
+    return (
+        <div>
+            <h2>Messages</h2>
+            <ul>
+                {messages.map((message) => (
+                    <li key={message._id}>{message.from}: {message.content}</li>
+                ))}
+            </ul>
+            <form onSubmit={handleSend}>
+                <label>
+                    Recipient:
+                    <input type="email" value={recipient} onChange={(e) => setRecipient(e.target.value)} required />
+                </label>
+                <label>
+                    Message:
+                    <textarea value={content} onChange={(e) => setContent(e.target.value)} required />
+                </label>
+                <button type="submit">Send</button>
+            </form>
+        </div>
+    );
+}
+
+export default Messages;
