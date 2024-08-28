@@ -1,0 +1,23 @@
+const express = require('express');
+const User = require('./models/User'); // Mongoose User model
+const app = express();
+
+app.use(express.json());
+
+// Search Alumni Endpoint
+app.get('/search-alumni', async (req, res) => {
+    try {
+        const { year, industry } = req.query;
+        const searchCriteria = {};
+
+        if (year) searchCriteria.graduationYear = year;
+        if (industry) searchCriteria.industry = industry;
+
+        const alumni = await User.find(searchCriteria);
+        res.status(200).json(alumni);
+    } catch (error) {
+        res.status(500).send('Server error');
+    }
+});
+
+app.listen(3000, () => console.log('Server running on port 3000'));
