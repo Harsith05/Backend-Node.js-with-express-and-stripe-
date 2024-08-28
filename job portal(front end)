@@ -1,0 +1,43 @@
+import React, { useState } from 'react';
+import axios from 'axios';
+
+function PostJob() {
+    const [title, setTitle] = useState('');
+    const [description, setDescription] = useState('');
+    const [location, setLocation] = useState('');
+    const [company, setCompany] = useState('');
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        try {
+            await axios.post('http://localhost:3000/post-job', { title, description, location, company });
+            alert('Job posted successfully');
+        } catch (error) {
+            alert('Job posting failed');
+        }
+    };
+
+    return (
+        <form onSubmit={handleSubmit}>
+            <label>
+                Title:
+                <input type="text" value={title} onChange={(e) => setTitle(e.target.value)} required />
+            </label>
+            <label>
+                Description:
+                <textarea value={description} onChange={(e) => setDescription(e.target.value)} required />
+            </label>
+            <label>
+                Location:
+                <input type="text" value={location} onChange={(e) => setLocation(e.target.value)} required />
+            </label>
+            <label>
+                Company:
+                <input type="text" value={company} onChange={(e) => setCompany(e.target.value)} required />
+            </label>
+            <button type="submit">Post Job</button>
+        </form>
+    );
+}
+
+export default PostJob;
