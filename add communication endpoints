@@ -1,0 +1,27 @@
+const Message = require('./models/Message');
+
+// Send Message Endpoint
+app.post('/send-message', authenticateJWT, async (req, res) => {
+    const { to, content } = req.body;
+    try {
+        const newMessage = new Message({
+            from: req.user.email,
+            to,
+            content
+        });
+        await newMessage.save();
+        res.status(201).send('Message sent');
+    } catch (error) {
+        res.status(500).send('Server error');
+    }
+});
+
+// Get Messages Endpoint
+app.get('/messages', authenticateJWT, async (req, res) => {
+    try {
+        const messages = await Message.find({ to: req.user.email }).sort({ timestamp: -1 });
+        res.json(messages);
+    } catch (error) {
+        res.status(500).send('Server error');
+    }
+});
