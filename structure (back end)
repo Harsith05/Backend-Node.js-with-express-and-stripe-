@@ -1,0 +1,36 @@
+const express = require('express');
+const mongoose = require('mongoose');
+const cors = require('cors');
+const bodyParser = require('body-parser');
+const authRoutes = require('./routes/authRoutes');
+const alumniRoutes = require('./routes/alumniRoutes');
+const fundRoutes = require('./routes/fundRoutes');
+const messageRoutes = require('./routes/messageRoutes');
+const studentRoutes = require('./routes/studentRoutes');
+
+const app = express();
+const PORT = process.env.PORT || 3000;
+
+// Middleware
+app.use(cors());
+app.use(bodyParser.json());
+
+// Routes
+app.use('/auth', authRoutes);
+app.use('/alumni', alumniRoutes);
+app.use('/fund', fundRoutes);
+app.use('/messages', messageRoutes);
+app.use('/students', studentRoutes);
+
+// Connect to MongoDB
+mongoose.connect('mongodb://localhost/alumni_platform', {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+    useCreateIndex: true
+})
+.then(() => console.log('MongoDB connected'))
+.catch(err => console.log(err));
+
+app.listen(PORT, () => {
+    console.log(`Server is running on port ${PORT}`);
+});
