@@ -1,0 +1,27 @@
+const express = require('express');
+const Job = require('./models/Job'); // Mongoose Job model
+const app = express();
+
+app.use(express.json());
+
+// Job Posting Endpoint
+app.post('/post-job', async (req, res) => {
+    try {
+        const { title, description, location, company } = req.body;
+
+        // Input validation
+        if (!title || !description || !location || !company) {
+            return res.status(400).send('All fields are required');
+        }
+
+        // Save job to database
+        const newJob = new Job({ title, description, location, company });
+        await newJob.save();
+
+        res.status(201).send('Job posted successfully');
+    } catch (error) {
+        res.status(500).send('Server error');
+    }
+});
+
+app.listen(3000, () => console.log('Server running on port 3000'));
