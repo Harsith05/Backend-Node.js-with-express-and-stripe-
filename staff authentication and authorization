@@ -1,0 +1,26 @@
+const Staff = require('./models/Staff');
+
+// Staff Login Endpoint
+app.post('/staff-login', async (req, res) => {
+    const { email, password } = req.body;
+    try {
+        const staff = await Staff.findOne({ email });
+        if (!staff || !await bcrypt.compare(password, staff.password)) {
+            return res.status(401).send('Invalid credentials');
+        }
+        const token = jwt.sign({ email: staff.email, role: staff.role }, 'your-secret-key');
+        res.json({ token });
+    } catch (error) {
+        res.status(500).send('Server error');
+    }
+});
+
+// Staff Authorization Middleware
+const authorizeRole = (role) => {
+    return (req, res, next) => {
+        if (req.user.role !== role) {
+            return res.sendStatus(403); // Forbidden
+        }
+        next();
+    };
+};
