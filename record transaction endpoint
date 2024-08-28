@@ -1,0 +1,23 @@
+const Transaction = require('./models/Transaction');
+
+// Record Donation Transaction Endpoint
+app.post('/record-transaction', authenticateJWT, authorizeRole('fund-manager'), async (req, res) => {
+    const { donorEmail, amount, project } = req.body;
+    try {
+        const newTransaction = new Transaction({ donorEmail, amount, project });
+        await newTransaction.save();
+        res.status(201).send('Transaction recorded');
+    } catch (error) {
+        res.status(500).send('Server error');
+    }
+});
+
+// View Transactions Endpoint
+app.get('/transactions', authenticateJWT, authorizeRole('fund-manager'), async (req, res) => {
+    try {
+        const transactions = await Transaction.find();
+        res.json(transactions);
+    } catch (error) {
+        res.status(500).send('Server error');
+    }
+});
