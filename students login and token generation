@@ -1,0 +1,30 @@
+const express = require('express');
+const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
+const Student = require('./models/Student');
+const authenticateJWT = require('./auth');
+const app = express();
+
+app.use(express.json());
+
+// Login Endpoint
+app.post('/login', async (req, res) => {
+    const { email, password } = req.body;
+    try {
+        const student = await Student.findOne({ email });
+        if (!student || !await bcrypt.compare(password, student.password)) {
+            return res.status(401).send('Invalid credentials');
+        }
+        const token = jwt.sign({ email: student.email }, 'your-secret-key');
+        res.json({ token });
+    } catch (error) {
+        res.status(500).send('Server error');
+    }
+});
+
+// Example of a protected route
+app.get('/profile', authenticateJWT, (req, res) => {
+    res.send(`Hello ${req.user.email}`);
+});
+
+app.listen(3000, () => console.log('Server running on port 3000'));
