@@ -1,0 +1,14 @@
+// Update Student Details Endpoint
+app.put('/update-student/:email', authenticateJWT, authorizeRole('admin'), async (req, res) => {
+    const { email } = req.params;
+    const updates = req.body;
+    try {
+        const updatedStudent = await Student.findOneAndUpdate({ email }, updates, { new: true });
+        if (!updatedStudent) {
+            return res.status(404).send('Student not found');
+        }
+        res.json(updatedStudent);
+    } catch (error) {
+        res.status(500).send('Server error');
+    }
+});
