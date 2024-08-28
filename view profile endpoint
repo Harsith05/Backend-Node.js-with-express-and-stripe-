@@ -1,0 +1,25 @@
+// Get Student Profile Endpoint (for staff)
+app.get('/student/:email', authenticateJWT, authorizeRole('admin'), async (req, res) => {
+    try {
+        const student = await Student.findOne({ email: req.params.email });
+        if (!student) {
+            return res.status(404).send('Student not found');
+        }
+        res.json(student);
+    } catch (error) {
+        res.status(500).send('Server error');
+    }
+});
+
+// Get Alumni Profile Endpoint (for staff)
+app.get('/alumni/:email', authenticateJWT, authorizeRole('admin'), async (req, res) => {
+    try {
+        const alumni = await User.findOne({ email: req.params.email });
+        if (!alumni) {
+            return res.status(404).send('Alumni not found');
+        }
+        res.json(alumni);
+    } catch (error) {
+        res.status(500).send('Server error');
+    }
+});
