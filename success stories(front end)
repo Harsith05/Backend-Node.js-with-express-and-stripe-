@@ -1,0 +1,38 @@
+import React, { useState } from 'react';
+import axios from 'axios';
+
+function SubmitStory() {
+    const [title, setTitle] = useState('');
+    const [content, setContent] = useState('');
+    const [alumniId, setAlumniId] = useState('');
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        try {
+            await axios.post('http://localhost:3000/submit-story', { title, content, alumniId });
+            alert('Success story submitted');
+        } catch (error) {
+            alert('Submission failed');
+        }
+    };
+
+    return (
+        <form onSubmit={handleSubmit}>
+            <label>
+                Title:
+                <input type="text" value={title} onChange={(e) => setTitle(e.target.value)} required />
+            </label>
+            <label>
+                Content:
+                <textarea value={content} onChange={(e) => setContent(e.target.value)} required />
+            </label>
+            <label>
+                Alumni ID:
+                <input type="text" value={alumniId} onChange={(e) => setAlumniId(e.target.value)} required />
+            </label>
+            <button type="submit">Submit Story</button>
+        </form>
+    );
+}
+
+export default SubmitStory;
