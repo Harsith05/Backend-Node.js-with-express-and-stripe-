@@ -1,0 +1,36 @@
+import React, { useState } from 'react';
+import axios from 'axios';
+
+function UpdateStudent({ studentEmail }) {
+    const [name, setName] = useState('');
+    const [major, setMajor] = useState('');
+
+    const handleUpdate = async (e) => {
+        e.preventDefault();
+        const token = localStorage.getItem('token');
+        try {
+            await axios.put(`http://localhost:3000/update-student/${studentEmail}`, { name, major }, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+            alert('Student details updated');
+        } catch (error) {
+            alert('Update failed');
+        }
+    };
+
+    return (
+        <form onSubmit={handleUpdate}>
+            <label>
+                Name:
+                <input type="text" value={name} onChange={(e) => setName(e.target.value)} />
+            </label>
+            <label>
+                Major:
+                <input type="text" value={major} onChange={(e) => setMajor(e.target.value)} />
+            </label>
+            <button type="submit">Update</button>
+        </form>
+    );
+}
+
+export default UpdateStudent;
