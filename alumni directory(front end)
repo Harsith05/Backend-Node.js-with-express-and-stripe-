@@ -1,0 +1,32 @@
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
+
+function SearchAlumni() {
+    const [year, setYear] = useState('');
+    const [industry, setIndustry] = useState('');
+    const [alumni, setAlumni] = useState([]);
+
+    const handleSearch = async () => {
+        try {
+            const { data } = await axios.get('http://localhost:3000/search-alumni', { params: { year, industry } });
+            setAlumni(data);
+        } catch (error) {
+            alert('Search failed');
+        }
+    };
+
+    return (
+        <div>
+            <input type="text" placeholder="Graduation Year" value={year} onChange={(e) => setYear(e.target.value)} />
+            <input type="text" placeholder="Industry" value={industry} onChange={(e) => setIndustry(e.target.value)} />
+            <button onClick={handleSearch}>Search</button>
+            <ul>
+                {alumni.map((a) => (
+                    <li key={a._id}>{a.name} - {a.industry}</li>
+                ))}
+            </ul>
+        </div>
+    );
+}
+
+export default SearchAlumni;
