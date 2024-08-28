@@ -1,0 +1,36 @@
+const express = require('express');
+const stripe = require('stripe')('your-stripe-secret-key');
+const Donation = require('./models/Donation'); // Mongoose Donation model
+const app = express();
+
+app.use(express.json());
+
+// Donation Endpoint
+app.post('/donate', async (req, res) => {
+    try {
+        const { amount, token } = req.body;
+
+        // Input validation
+        if (!amount || !token) {
+            return res.status(400).send('Amount and payment token are required');
+        }
+
+        // Payment processing
+        await stripe.charges.create({
+            amount: amount * 100, // amount in cents
+            currency: 'usd',
+            source: token,
+            description: 'Donation'
+        });
+
+        // Save donation to database
+        const newDonation = new Donation({ amount });
+        await newDonation.save();
+
+        res.status(200).send('Donation successful');
+    } catch (error) {
+        res.status(500).send('Server error');
+    }
+});
+
+app.listen(3000, () => console.log('Server running on port 3000'));
